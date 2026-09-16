@@ -1,4 +1,10 @@
 cmake_minimum_required(VERSION 3.12)
+
+# The Pico 2 W is the primary Fuzzball-development target.  Override this at
+# configure time (for example, -DPICO_BOARD=pico_w) when checking the RP2040
+# boards.  The selection must happen before pico_sdk_init().
+set(PICO_BOARD "pico2_w" CACHE STRING "Raspberry Pi Pico board target")
+
 include(pico_sdk_import.cmake)
 include(${PICO_SDK_PATH}/pico_sdk_init.cmake)
 
