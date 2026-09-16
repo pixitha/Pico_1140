@@ -25,6 +25,13 @@ cmake -S Pico_1140_DC -B build/pico2w -G Ninja \
 cmake --build build/pico2w
 ```
 
+`maker_pi_pico_sdio` is the default storage profile for development on the
+Cytron Maker Pi Pico. It configures four-bit SDIO on GPIO 10--15. A compact
+device using an external Adafruit SDIO breakout may retain that exact wiring
+and select `-DPICO_FUZZBALL_STORAGE_PROFILE=external_sdio_gp10_15`; it is the
+same electrical profile, explicitly named for the device build. A future
+external-SPI profile will be added after its physical pin assignment is fixed.
+
 For an RP2040 Pico W, use `-DPICO_BOARD=pico_w`. The 16 MiB third-party board
 needs its exact SDK board definition; do not assume its flash geometry from the
 generic Pico W target.
