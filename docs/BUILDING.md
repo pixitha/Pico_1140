@@ -38,10 +38,24 @@ copied disk image used for the boot attempt.
 On 2026-09-16, this branch built successfully for `pico2_w` with Pico SDK
 2.1.1 (`bddd20f928ce76142793bef434d4f75f4af6e433`) and Arm GNU Toolchain
 15.3.1. The resulting ELF reported `244936` bytes of text and `236864` bytes
-of BSS (`481800` bytes total); the UF2 SHA-256 was
-`31b909120dd7d11a1c9c007642e37eb52eefe743a947b7c4d2bbf560bd22f98e`.
+of BSS (`481800` bytes total).  The RP2350 build selects its supported
+150 MHz system clock; the legacy RP2040 build retains its 200 MHz setting.
+The corrected Pico 2 W UF2 SHA-256 was
+`d0a8fed459af38c5995147429f751f7a7a612f9456354ddde48269fc63fce719`.
 
-This is a compile/link result only. It has not been flashed or run. On RP2350,
-the legacy FatFs component has no compatible hardware RTC, so it deliberately
-returns an unset FAT timestamp until a real board-specific time source is
-implemented.
+This image was flashed to a Raspberry Pi Pico 2 W in BOOTSEL mode.  It
+enumerated a USB serial device (`/dev/cu.usbmodem101`) and reached the SD SPI
+initializer.  With no responding card on the configured legacy SPI pins, it
+reported `No response CMD:0`, then halted with `f_mount error` 3 (physical
+drive cannot work).  This establishes firmware execution and USB console
+operation only; it is not an RT-11 or Fuzzball boot result.
+
+The current inherited SD configuration is SPI1 with GPIO 12 (MISO), GPIO 15
+(MOSI), GPIO 14 (SCK), and GPIO 9 (card select).  Before the next test, wire
+a 3.3 V-compatible SPI SD adapter to those GPIOs and ground, then use a FAT32
+card containing a *copy* of the intended RT-11 disk image.  Do not connect a
+5 V SD adapter directly to Pico GPIO.
+
+On RP2350, the legacy FatFs component has no compatible hardware RTC, so it
+deliberately returns an unset FAT timestamp until a real board-specific time
+source is implemented.

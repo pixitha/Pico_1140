@@ -99,7 +99,13 @@ int main() {
 	char *bfr,rkfile[32],rlfile[32];
 	int bootdev=0;
 
+#if defined(PICO_RP2350)
+	// Pico 2 W's RP2350 is specified for a 150 MHz system clock.  The
+	// original RP2040 port deliberately overclocked to 200 MHz.
+	set_sys_clock_khz(150000, true);
+#else
 	set_sys_clock_khz(200000, true);
+#endif
 	stdio_init_all();
 	gpio_set_pulls(1,true,false);
 	gpio_set_function(0, GPIO_FUNC_UART);
