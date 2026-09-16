@@ -1,3 +1,13 @@
+// kt11.h — KT11-C MMU (Mills DCN compatible)
+//
+// Register layout:
+//   Supervisor: PAR 172200-172216, PDR 172220-172236
+//   Kernel:     PAR 172300-172316, PDR 172320-172336
+//   User:       PAR 177600-177616, PDR 177620-177636
+//   MMR0/SR0:   177572   MMR1/SR1: 177574   MMR2/SR2: 177576
+//
+// modes: pages[0]=kernel, pages[1]=supervisor, pages[2]=illegal, pages[3]=user
+
 #pragma once
 #include "avr11.h"
 #include <array>
@@ -56,8 +66,9 @@ class KT11 {
             SR[0] |= 0200;
             trap(0250); // intfault
         }
+        pages[mode][i].pdr |= PDR_A;
         if constexpr (wr) {
-            pages[mode][i].pdr |= 1 << 6;
+            pages[mode][i].pdr |= PDR_W;
         }
         const auto aa = ((pages[mode][i].addr() + block) << 6) + disp;
         // printf("decode: slow %06o -> %06o\n", a, aa);
@@ -76,6 +87,9 @@ class KT11 {
         inline bool write() { return (pdr & 6) == 6; };
         inline bool ed() { return pdr & 8; }
     };
+
+    static constexpr uint16_t PDR_W = 0000100;
+    static constexpr uint16_t PDR_A = 0000200;
 
     std::array<std::array<struct page, 16>, 4> pages;
     void dumppages();
