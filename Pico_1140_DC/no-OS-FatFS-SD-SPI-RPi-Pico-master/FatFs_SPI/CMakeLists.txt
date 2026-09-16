@@ -23,6 +23,11 @@ target_include_directories(FatFs_SPI INTERFACE
 target_link_libraries(FatFs_SPI INTERFACE
         hardware_spi
         hardware_dma
-        hardware_rtc
         pico_stdlib
 )
+
+# The legacy timestamp helper uses the RP2040 RTC peripheral.  RP2350 has no
+# compatible hardware_rtc target; rtc.c supplies a timestamp-free fallback.
+if (PICO_RP2040)
+    target_link_libraries(FatFs_SPI INTERFACE hardware_rtc)
+endif()

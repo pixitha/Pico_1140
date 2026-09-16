@@ -14,7 +14,9 @@ specific language governing permissions and limitations under the License.
 #include <stdio.h>
 #include <time.h>
 //
+#if !defined(PICO_RP2350)
 #include "hardware/rtc.h"
+#endif
 #include "pico/stdio.h"
 #include "pico/stdlib.h"
 #include "pico/util/datetime.h"
@@ -23,6 +25,19 @@ specific language governing permissions and limitations under the License.
 #include "util.h"  // calculate_checksum
 //
 #include "rtc.h"
+
+#if defined(PICO_RP2350)
+
+/* RP2350 has no hardware RTC block compatible with the RP2040 SDK API.  The
+ * emulator does not use wall-clock time; return an unset FAT timestamp until
+ * a board-specific time source is intentionally added. */
+void time_init(void) {}
+
+DWORD get_fattime(void) {
+    return 0;
+}
+
+#else
 
 static time_t epochtime;
 
@@ -114,3 +129,5 @@ DWORD get_fattime(void) {
     fattime |= (0b00011111 & sd);
     return fattime;
 }
+
+#endif

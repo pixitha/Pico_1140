@@ -5,6 +5,7 @@
 //
 #include "f_util.h"
 #include "ff.h"
+#include "hardware/clocks.h"
 #include "pico/stdlib.h"
 #include "rtc.h"
 #include "string.h"
