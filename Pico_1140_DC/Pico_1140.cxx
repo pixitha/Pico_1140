@@ -7,7 +7,7 @@
 #include "ff.h"
 #include "hardware/clocks.h"
 #include "pico/stdlib.h"
-#include "rtc.h"
+#include "my_rtc.h"
 #include "string.h"
 #include <string>
 //
@@ -23,7 +23,7 @@ int SelFile;
 
 // List contents of SDCard.
 
-void ls(const char *dir) {
+void list_images(const char *dir) {
 	char cwdbuf[FF_LFN_BUF] = { 0 };
 	FRESULT fr; /* Return value */
 	char const *p_dir;
@@ -92,7 +92,7 @@ void ls(const char *dir) {
 static void run_ls() {
 	const char *arg1 = strtok(NULL, " ");
 	if (!arg1) arg1 = "";
-	ls(arg1);
+	list_images(arg1);
 }
 
 int main() {
@@ -118,7 +118,7 @@ int main() {
 	uart_init(uart1,9600);
 	time_init();
 	sd_card_t *pSD = sd_get_by_num(0);
-	FRESULT fr = f_mount(&pSD->fatfs, pSD->pcName, 1);
+	FRESULT fr = f_mount(&pSD->state.fatfs, "", 1);
 	if (FR_OK != fr)
 		panic("f_mount error: %s (%d)\n", FRESULT_str(fr), fr);
 	

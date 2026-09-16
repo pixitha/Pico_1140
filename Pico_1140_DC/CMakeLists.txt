@@ -20,7 +20,7 @@ if (TARGET tinyusb_device)
     add_executable(Pico_1140 avr11.cxx disasm.cxx getline.cxx kb11.cxx kl11.cxx kt11.cxx kw11.cxx lp11.cxx pc11.cxx Pico_1140.cxx rk11.cxx rl11.cxx unibus.cxx dl11.cxx fp11.cxx hw_config.c)
 
     # pull in common dependencies
-    target_link_libraries(Pico_1140 pico_stdlib FatFs_SPI)
+    target_link_libraries(Pico_1140 pico_stdlib no-OS-FatFS-SD-SDIO-SPI-RPi-Pico)
 
     # enable usb output, disable uart output
     pico_enable_stdio_usb(Pico_1140 1)
@@ -34,6 +34,8 @@ if (TARGET tinyusb_device)
 elseif(PICO_ON_DEVICE)
     message(WARNING "not building hello_usb because TinyUSB submodule is not initialized in the SDK")
 endif()
-add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico-master/FatFs_SPI)
+# Pinned upstream SDIO/SPI FatFs snapshot.  The legacy SPI-only copy remains
+# vendored for comparison while this port is validated on real hardware.
+add_subdirectory(no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src)
 add_compile_definitions(PICO_STDIO_USB_ENABLE_RESET_VIA_BAUD_RATE=1)
 add_compile_definitions(PICO_STDIO_USB_ENABLE_RESET_VIA_VENDOR_INTERFACE=0)

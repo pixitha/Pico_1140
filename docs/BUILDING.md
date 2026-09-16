@@ -37,25 +37,27 @@ copied disk image used for the boot attempt.
 
 On 2026-09-16, this branch built successfully for `pico2_w` with Pico SDK
 2.1.1 (`bddd20f928ce76142793bef434d4f75f4af6e433`) and Arm GNU Toolchain
-15.3.1. The resulting ELF reported `244936` bytes of text and `236864` bytes
-of BSS (`481800` bytes total).  The RP2350 build selects its supported
-150 MHz system clock; the legacy RP2040 build retains its 200 MHz setting.
-The corrected Pico 2 W UF2 SHA-256 was
-`d0a8fed459af38c5995147429f751f7a7a612f9456354ddde48269fc63fce719`.
+15.3.1. The RP2350 build selects its supported 150 MHz system clock; the
+legacy RP2040 build retains its 200 MHz setting.
 
-This image was flashed to a Raspberry Pi Pico 2 W in BOOTSEL mode.  It
-enumerated a USB serial device (`/dev/cu.usbmodem101`) and reached the SD SPI
-initializer.  With no responding card on the configured legacy SPI pins, it
-reported `No response CMD:0`, then halted with `f_mount error` 3 (physical
-drive cannot work).  This establishes firmware execution and USB console
-operation only; it is not an RT-11 or Fuzzball boot result.
+The current configuration vendors upstream
+`no-OS-FatFS-SD-SDIO-SPI-RPi-Pico` revision
+`d5e453404cdbfaa55ab30d285b6ab0b730e84a05`. It selects the Maker Pi Pico
+onboard socket's four-bit SDIO interface: CLK=GPIO 10, CMD=GPIO 11, and
+D0--D3=GPIO 12--15. It uses a conservative 20,833,333 Hz initial baud rate.
+The resulting ELF reported `278136` bytes of text and `237096` bytes of BSS
+(`515232` bytes total); its UF2 SHA-256 was
+`5f9754ce8ac01063600fea8957d38228719ffa1ce2d7c563600f1a67e1b24a40`.
 
-The current inherited SD configuration is SPI1 with GPIO 12 (MISO), GPIO 15
-(MOSI), GPIO 14 (SCK), and GPIO 9 (card select).  Before the next test, wire
-a 3.3 V-compatible SPI SD adapter to those GPIOs and ground, then use a FAT32
-card containing a *copy* of the intended RT-11 disk image.  Do not connect a
-5 V SD adapter directly to Pico GPIO.
+This is a compile/link result only. It must be flashed only after the Pico 2 W
+has been seated in the Maker Pi Pico board and a FAT32 microSD card is in the
+onboard socket. Use a *copy* of the intended RT-11 disk image. The SDIO
+library's current RP2350 timer implementation supplies an unset FAT timestamp
+until a real time source has been set; this does not prevent read-only media
+testing.
 
-On RP2350, the legacy FatFs component has no compatible hardware RTC, so it
-deliberately returns an unset FAT timestamp until a real board-specific time
-source is implemented.
+The preceding SPI-only baseline used the legacy driver and did execute on a
+bare Pico 2 W: its USB console reached SPI initialization, then correctly
+reported no response because no card was wired to its legacy SPI pins. It is
+historical hardware evidence only; the current image uses SDIO and has not
+been physically tested.
